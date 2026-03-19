@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Osmanlıca Harf Quiz</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f8f6f1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem;
+    color: #1a1a1a;
+  }
+
+  h1 {
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+
+  #card {
+    background: #ffffff;
+    border: 1px solid #e8e4dc;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  #harf-display {
+    font-size: 120px;
+    line-height: 1;
+    margin-bottom: 1rem;
+    font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
+    color: #1a1a1a;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1rem;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    direction: rtl;
+    border: 1px solid #f0ece4;
+  }
+
+  #ipucu {
+    font-size: 13px;
+    color: #999;
+    font-family: Georgia, serif;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    min-height: 20px;
+  }
+
+  #harf-adi {
+    font-size: 12px;
+    color: #bbb;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0;
+  }
+
+  #secenekler {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 1.25rem;
+  }
+
+  .secsenek {
+    background: #ffffff;
+    border: 1px solid #e0dbd0;
+    border-radius: 10px;
+    padding: 14px 10px;
+    font-size: 16px;
+    font-family: Georgia, serif;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    text-align: center;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .secsenek:hover:not(:disabled) {
+    background: #f5f2eb;
+    border-color: #c8c0b0;
+  }
+
+  .secsenek.dogru {
+    background: #eaf5ee;
+    border-color: #7cc49a;
+    color: #1a6e3a;
+  }
+
+  .secsenek.yanlis {
+    background: #fdf0f0;
+    border-color: #e8a0a0;
+    color: #8b2020;
+  }
+
+  .secsenek:disabled {
+    cursor: default;
+  }
+
+  #feedback {
+    font-size: 14px;
+    color: #888;
+    min-height: 22px;
+    font-family: Georgia, serif;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  #feedback.dogru { color: #2a7a4a; }
+  #feedback.yanlis { color: #8b2020; }
+
+  #next-btn {
+    background: #1a1a1a;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-size: 14px;
+    font-family: Georgia, serif;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    display: none;
+    transition: background 0.15s;
+  }
+
+  #next-btn:hover { background: #333; }
+
+  #progress-bar-wrap {
+    width: 100%;
+    max-width: 420px;
+    background: #e8e4dc;
+    border-radius: 99px;
+    height: 4px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  #progress-bar {
+    height: 4px;
+    background: #1a1a1a;
+    border-radius: 99px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  #stats {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 1rem;
+    font-size: 12px;
+    color: #aaa;
+    letter-spacing: 0.05em;
+  }
+
+  #result-screen {
+    display: none;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+  }
+
+  #result-screen h2 {
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+  }
+
+  #result-screen p {
+    font-size: 14px;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+
+  #result-score {
+    font-size: 56px;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
+  }
+
+  #result-label {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 2rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  #yanlis-listesi {
+    background: #fff;
+    border: 1px solid #e8e4dc;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+
+  #yanlis-listesi h3 {
+    font-size: 11px;
+    color: #aaa;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+
+  .yanlis-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0ece4;
+    font-size: 14px;
+  }
+
+  .yanlis-item:last-child { border-bottom: none; }
+
+  .yanlis-harf {
+    font-size: 28px;
+    font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
+    direction: rtl;
+    min-width: 36px;
+    text-align: center;
+    color: #1a1a1a;
+  }
+
+  .yanlis-detail { color: #666; font-size: 13px; }
+  .yanlis-detail span { color: #8b2020; }
+  .yanlis-detail strong { color: #2a7a4a; }
+
+  #restart-btn {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 36px;
+    font-size: 14px;
+    font-family: Georgia, serif;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+  }
+
+  #restart-btn:hover { background: #333; }
+</style>
+</head>
+<body>
+
+<h1>Osmanlıca · Harf Quiz</h1>
+
+<div id="stats">
+  <span id="soru-no">1 / 29</span>
+  <span id="dogru-sayisi">Doğru: 0</span>
+</div>
+
+<div id="progress-bar-wrap">
+  <div id="progress-bar"></div>
+</div>
+
+<div id="quiz-screen">
+  <div id="card">
+    <div id="harf-display">ب</div>
+    <div id="ipucu">dudak sesi</div>
+    <div id="harf-adi">be</div>
+  </div>
+
+  <div id="secenekler"></div>
+  <div id="feedback"></div>
+  <button id="next-btn" onclick="nextQuestion()">Sonraki →</button>
+</div>
+
+<div id="result-screen">
+  <div id="result-score">0/29</div>
+  <div id="result-label">Doğru Cevap</div>
+  <h2 id="result-baslik">Tebrikler</h2>
+  <p id="result-mesaj">Quiz tamamlandı.</p>
+  <div id="yanlis-listesi">
+    <h3>Tekrar çalışılacaklar</h3>
+    <div id="yanlis-items"></div>
+  </div>
+  <button id="restart-btn" onclick="restart()">Tekrar Başla</button>
+</div>
+
+<script>
+const HARFLER = [
+  { harf: 'ا', ad: 'elif', ses: 'a / e (uzun)', ipucu: 'kelime başında ünlü taşıyıcı' },
+  { harf: 'ب', ad: 'be', ses: 'b', ipucu: 'dudak sesi' },
+  { harf: 'پ', ad: 'pe', ses: 'p', ipucu: 'dudak sesi, Farsça kökenli' },
+  { harf: 'ت', ad: 'te', ses: 't', ipucu: 'diş sesi' },
+  { harf: 'ث', ad: 'se', ses: 's', ipucu: 'Arapçada "s" benzeri' },
+  { harf: 'ج', ad: 'cim', ses: 'c', ipucu: 'damak sesi' },
+  { harf: 'چ', ad: 'çim', ses: 'ç', ipucu: 'Farsça kökenli' },
+  { harf: 'ح', ad: 'ha', ses: 'h', ipucu: 'boğaz "h"sı, derin' },
+  { harf: 'خ', ad: 'hı', ses: 'h (hırıltılı)', ipucu: '"kh" gibi, Almanca "Bach"' },
+  { harf: 'د', ad: 'dal', ses: 'd', ipucu: 'diş sesi' },
+  { harf: 'ذ', ad: 'zel', ses: 'z', ipucu: 'Arapçada "z" benzeri' },
+  { harf: 'ر', ad: 're', ses: 'r', ipucu: 'titrek r' },
+  { harf: 'ز', ad: 'ze', ses: 'z', ipucu: 'titreşimli diş sesi' },
+  { harf: 'ژ', ad: 'je', ses: 'j', ipucu: 'Farsça kökenli, Fransızca "j"' },
+  { harf: 'س', ad: 'sin', ses: 's', ipucu: 'keskin s' },
+  { harf: 'ش', ad: 'şın', ses: 'ş', ipucu: 'ıslık değil, "sh"' },
+  { harf: 'ص', ad: 'sad', ses: 's (vurgulu)', ipucu: 'kalın, boğazdan s' },
+  { harf: 'ض', ad: 'dad', ses: 'd (vurgulu)', ipucu: 'kalın d, Arapçaya özgü' },
+  { harf: 'ط', ad: 'tı', ses: 't (vurgulu)', ipucu: 'kalın t' },
+  { harf: 'ظ', ad: 'zı', ses: 'z (vurgulu)', ipucu: 'kalın z' },
+  { harf: 'ع', ad: 'ayın', ses: "' (boğaz sesi)", ipucu: 'gırtlaktan, sessiz gibi okunur' },
+  { harf: 'غ', ad: 'gayn', ses: 'ğ / g', ipucu: 'yumuşak g, gırtlaktan' },
+  { harf: 'ف', ad: 'fe', ses: 'f', ipucu: 'diş-dudak sesi' },
+  { harf: 'ق', ad: 'kaf', ses: 'k (kalın)', ipucu: 'boğazdan k' },
+  { harf: 'ک', ad: 'kef', ses: 'k / g / ğ / n', ipucu: 'konuma göre değişir' },
+  { harf: 'گ', ad: 'gef', ses: 'g', ipucu: 'Farsça kökenli' },
+  { harf: 'ل', ad: 'lam', ses: 'l', ipucu: 'akıcı ses' },
+  { harf: 'م', ad: 'mim', ses: 'm', ipucu: 'dudak sesi, nazal' },
+  { harf: 'ن', ad: 'nun', ses: 'n', ipucu: 'nazal diş sesi' },
+  { harf: 'و', ad: 'vav', ses: 'v / u / ü / o / ö', ipucu: 'konuma göre değişir' },
+  { harf: 'ه', ad: 'he', ses: 'h / e / a', ipucu: 'kelime sonunda genellikle ünlü' },
+  { harf: 'ڭ', ad: 'nef (sağır kef)', ses: 'ng', ipucu: 'nazal n, Türkçeye özgü' },
+  { harf: 'ی', ad: 'ye', ses: 'y / ı / i', ipucu: 'konuma göre değişir' },
+];
+
+let sorular = [];
+let mevcutIndex = 0;
+let dogruSayisi = 0;
+let yanlisList = [];
+let cevapVerildi = false;
+
+function karistir(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function secenekUret(dogru) {
+  const havuz = HARFLER.filter(h => h.ses !== dogru.ses);
+  const yanlis = karistir(havuz).slice(0, 3).map(h => h.ses);
+  return karistir([dogru.ses, ...yanlis]);
+}
+
+function quizBaslat() {
+  sorular = karistir(HARFLER);
+  mevcutIndex = 0;
+  dogruSayisi = 0;
+  yanlisList = [];
+  cevapVerildi = false;
+
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('result-screen').style.display = 'none';
+
+  soruGoster();
+}
+
+function soruGoster() {
+  const soru = sorular[mevcutIndex];
+  cevapVerildi = false;
+
+  document.getElementById('harf-display').textContent = soru.harf;
+  document.getElementById('ipucu').textContent = soru.ipucu;
+  document.getElementById('harf-adi').textContent = soru.ad;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = '';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const toplam = sorular.length;
+  document.getElementById('soru-no').textContent = `${mevcutIndex + 1} / ${toplam}`;
+  document.getElementById('dogru-sayisi').textContent = `Doğru: ${dogruSayisi}`;
+  document.getElementById('progress-bar').style.width = `${(mevcutIndex / toplam) * 100}%`;
+
+  const secenekler = secenekUret(soru);
+  const kapsayici = document.getElementById('secenekler');
+  kapsayici.innerHTML = '';
+
+  secenekler.forEach(secenek => {
+    const btn = document.createElement('button');
+    btn.className = 'secsenek';
+    btn.textContent = secenek;
+    btn.onclick = () => cevapla(secenek, soru.ses, btn);
+    kapsayici.appendChild(btn);
+  });
+}
+
+function cevapla(secilen, dogru, btn) {
+  if (cevapVerildi) return;
+  cevapVerildi = true;
+
+  const tumButonlar = document.querySelectorAll('.secsenek');
+  tumButonlar.forEach(b => {
+    b.disabled = true;
+    if (b.textContent === dogru) b.classList.add('dogru');
+  });
+
+  const feedback = document.getElementById('feedback');
+
+  if (secilen === dogru) {
+    btn.classList.add('dogru');
+    dogruSayisi++;
+    feedback.textContent = 'Doğru';
+    feedback.className = 'dogru';
+  } else {
+    btn.classList.add('yanlis');
+    feedback.textContent = `Doğru cevap: ${dogru}`;
+    feedback.className = 'yanlis';
+    yanlisList.push({ harf: sorular[mevcutIndex].harf, ad: sorular[mevcutIndex].ad, dogru, secilen });
+  }
+
+  document.getElementById('dogru-sayisi').textContent = `Doğru: ${dogruSayisi}`;
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  mevcutIndex++;
+  if (mevcutIndex >= sorular.length) {
+    sonucGoster();
+  } else {
+    soruGoster();
+  }
+}
+
+function sonucGoster() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'block';
+
+  const toplam = sorular.length;
+  const oran = dogruSayisi / toplam;
+
+  document.getElementById('result-score').textContent = `${dogruSayisi}/${toplam}`;
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('soru-no').textContent = `${toplam} / ${toplam}`;
+  document.getElementById('dogru-sayisi').textContent = `Doğru: ${dogruSayisi}`;
+
+  let baslik, mesaj;
+  if (oran >= 0.9) { baslik = 'Mükemmel'; mesaj = 'Harflere hâkimsin.'; }
+  else if (oran >= 0.7) { baslik = 'İyi gidiyorsun'; mesaj = 'Birkaç harf daha pratik ister.'; }
+  else if (oran >= 0.5) { baslik = 'Devam et'; mesaj = 'Temeller oturuyor, alıştırma gerekiyor.'; }
+  else { baslik = 'Başlangıç'; mesaj = 'Tekrar et, her seferinde daha iyi olacak.'; }
+
+  document.getElementById('result-baslik').textContent = baslik;
+  document.getElementById('result-mesaj').textContent = mesaj;
+
+  const yanlisSayi = document.getElementById('result-label');
+  yanlisSayi.textContent = 'Doğru Cevap';
+
+  const yanlisBolumu = document.getElementById('yanlis-listesi');
+  const yanlisItems = document.getElementById('yanlis-items');
+  yanlisItems.innerHTML = '';
+
+  if (yanlisList.length === 0) {
+    yanlisBolumu.style.display = 'none';
+  } else {
+    yanlisBolumu.style.display = 'block';
+    yanlisList.forEach(y => {
+      const div = document.createElement('div');
+      div.className = 'yanlis-item';
+      div.innerHTML = `
+        <span class="yanlis-harf">${y.harf}</span>
+        <div class="yanlis-detail">
+          <div>${y.ad}</div>
+          <div><span>${y.secilen}</span> → <strong>${y.dogru}</strong></div>
+        </div>
+      `;
+      yanlisItems.appendChild(div);
+    });
+  }
+}
+
+function restart() {
+  quizBaslat();
+}
+
+quizBaslat();
+</script>
+</body>
+</html>
